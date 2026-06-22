@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WisataNabila - Dashboard Data Wisatawan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-card: #ffffff;
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --slate-dark: #1e293b;
+            --slate-text: #334155;
+            --slate-light: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--slate-text);
+            padding: 0 0 40px 0;
+        }
+
+        /* Top Navbar */
+        .navbar {
+            background-color: var(--bg-card);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--slate-dark);
+        }
+
+        .brand span { color: var(--primary); }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--slate-dark);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Container Main Layout */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 380px 1fr;
+            }
+        }
+
+        /* Card Component */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .card-header {
+            padding: 24px 24px 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--slate-dark);
+        }
+
+        .card-body { padding: 24px; }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--slate-light);
+        }
+
+        .input-wrapper { position: relative; }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-light);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            color: var(--slate-dark);
+            background-color: #f8fafc;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus {
+            background-color: #fff;
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Premium Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            padding: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--slate-dark);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #0f172a;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger-icon {
+            background: #fef2f2;
+            color: var(--danger);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #fee2e2;
+        }
+
+        .btn-danger-icon:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+            transform: scale(1.05);
+        }
+
+        /* Search Controls */
+        .search-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            padding-left: 40px;
+            background-color: #fff;
+        }
+
+        /* Table UI Design */
+        .table-responsive { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f8fafc;
+            padding: 16px 24px;
+            font-weight: 600;
+            color: var(--slate-light);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            color: var(--slate-text);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f8fafc; }
+
+        .badge-id {
+            background: #f1f5f9;
+            color: var(--slate-dark);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .wisatawan-name {
+            font-weight: 500;
+            color: var(--slate-dark);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px !important;
+            color: var(--slate-light);
+        }
+
+        /* Toast Status Messages */
+        #toast-notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            color: white;
+            font-weight: 500;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success { background-color: var(--primary); }
+        .toast-error { background-color: var(--danger); }
+
+        /* Custom Modal Konfirmasi Hapus */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0; pointer-events: none;
+            transition: var(--transition);
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+        .modal-overlay.active .modal-card { transform: scale(1); }
+
+        .modal-title { font-size: 1.25rem; font-weight: 600; color: var(--slate-dark); margin-bottom: 10px; }
+        .modal-desc { color: var(--slate-light); font-size: 0.9rem; margin-bottom: 24px; }
+        .modal-actions { display: flex; gap: 12px; }
+        
+        .btn-modal-cancel { background: #e2e8f0; color: var(--slate-text); }
+        .btn-modal-cancel:hover { background: #cbd5e1; }
+        .btn-modal-confirm { background: var(--danger); color: white; }
+        .btn-modal-confirm:hover { background: var(--danger-hover); }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">🚀 Wisata<span>Nabila</span></div>
+    <div class="user-profile">
+        <div class="user-avatar">NK</div>
+        <div style="text-align: left; font-size: 0.8rem;">
+            <p style="font-weight: 600; color: var(--slate-dark);">Nabila K.</p>
+            <p style="color: var(--primary); font-weight: 500; font-size: 0.75rem;">Administrator</p>
+        </div>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Data Entry</h3>
+        </div>
+        <div class="card-body">
+            <form id="wisatawanForm">
+                <div class="form-group">
+                    <label for="id_wisatawan">ID WISATAWAN</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🪪</span>
+                        <input type="text" id="id_wisatawan" placeholder="Contoh: WST-01" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nama_wisatawan">NAMA LENGKAP</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="nama_wisatawan" placeholder="Masukkan nama wisatawan" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tempat_lahir">TEMPAT LAHIR</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📍</span>
+                        <input type="text" id="tempat_lahir" placeholder="Contoh: Jakarta" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tanggal_lahir">TANGGAL LAHIR</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📅</span>
+                        <input type="date" id="tanggal_lahir" required>
+                    </div>
+                </div>
+                <button type="submit" id="btnSimpan" class="btn btn-primary">
+                    <span>Simpan ke Firestore</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Real-time List</h3>
+        </div>
+        <div class="card-body">
+            <div class="search-container">
+                <div class="input-wrapper" style="width: 100%;">
+                    <span class="input-icon">🔍</span>
+                    <input type="text" id="pencarianInput" placeholder="Cari berdasarkan nama, id, atau tempat lahir...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 15%">ID</th>
+                            <th style="width: 30%">Nama Wisatawan</th>
+                            <th style="width: 25%">Tempat Lahir</th>
+                            <th style="width: 20%">Tanggal Lahir</th>
+                            <th style="width: 10%; text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelWisatawan">
+                        <tr>
+                            <td colspan="5" class="empty-state">Menghubungkan ke database...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-notification"></div>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-card">
+        <div style="font-size: 3rem; margin-bottom: 10px;">🗑️</div>
+        <h4 class="modal-title">Konfirmasi Hapus</h4>
+        <p class="modal-desc">Apakah Anda yakin ingin menghapus data wisatawan ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="modal-actions">
+            <button class="btn btn-modal-cancel" id="btnCancelDelete">Batal</button>
+            <button class="btn btn-modal-confirm" id="btnConfirmDelete">Ya, Hapus</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBUgVk-8zWiz5EwfPUIdBpPEPA3Qmq5etM",
+        authDomain: "nabila2026-6777c.firebaseapp.com",
+        projectId: "nabila2026-6777c",
+        storageBucket: "nabila2026-6777c.firebasestorage.app",
+        messagingSenderId: "106240320666",
+        appId: "1:106240320666:web:69e57ccdf6cb97699b2b23"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById('wisatawanForm');
+    const btnSimpan = document.getElementById('btnSimpan');
+    const tabelWisatawan = document.getElementById('tabelWisatawan');
+    const pencarianInput = document.getElementById('pencarianInput');
+    
+    let currentDeleteId = null;
+    const deleteModal = document.getElementById('deleteModal');
+    let localDataWisatawan = [];
+
+    // 1. INPUT DATA (CREATE)
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const idWisatawan = document.getElementById('id_wisatawan').value.trim();
+        const namaWisatawan = document.getElementById('nama_wisatawan').value.trim();
+        const tempatLahir = document.getElementById('tempat_lahir').value.trim();
+        const tanggalLahir = document.getElementById('tanggal_lahir').value;
+
+        btnSimpan.disabled = true;
+        btnSimpan.innerHTML = '<span>Menyimpan Data...</span>';
+
+        try {
+            // Ditambahkan field tempat_lahir dan tanggal_lahir ke objek penyimpanan
+            await addDoc(collection(db, "wisatawan"), {
+                id_wisatawan: idWisatawan,
+                nama_wisatawan: namaWisatawan,
+                tempat_lahir: tempatLahir,
+                tanggal_lahir: tanggalLahir,
+                timestamp: new Date()
+            });
+
+            showToast("Sukses menambah data wisatawan!", "success");
+            form.reset();
+        } catch (error) {
+            showToast("Gagal menyimpan: " + error.message, "error");
+        } finally {
+            btnSimpan.disabled = false;
+            btnSimpan.innerHTML = '<span>Simpan ke Firestore</span>';
+        }
+    });
+
+    // 2. AMBIL DATA REAL-TIME & RENDER (READ)
+    const q = query(collection(db, "wisatawan"), orderBy("timestamp", "desc"));
+    
+    onSnapshot(q, (snapshot) => {
+        localDataWisatawan = [];
+        snapshot.forEach((doc) => {
+            localDataWisatawan.push({ docId: doc.id, ...doc.data() });
+        });
+        renderTable(localDataWisatawan);
+    }, (error) => {
+        tabelWisatawan.innerHTML = `<tr><td colspan="5" class="empty-state" style="color:var(--danger)">Gagal menyinkronkan data. Periksa aturan database.</td></tr>`;
+    });
+
+    // Fungsi Pembantu untuk Memformat Tampilan Tanggal Indonesia (DD-MM-YYYY)
+    function formatTanggalIndo(stringTanggal) {
+        if(!stringTanggal) return '-';
+        const opsi = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(stringTanggal).toLocaleDateString('id-ID', opsi);
+    }
+
+    // Fungsi Render Tabel HTML
+    function renderTable(dataArray) {
+        tabelWisatawan.innerHTML = "";
+
+        if (dataArray.length === 0) {
+            tabelWisatawan.innerHTML = `<tr><td colspan="5" class="empty-state">Tidak ada data wisatawan yang cocok.</td></tr>`;
+            return;
+        }
+
+        dataArray.forEach((item) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span class="badge-id">${item.id_wisatawan || '-'}</span></td>
+                <td><span class="wisatawan-name">${item.nama_wisatawan || '-'}</span></td>
+                <td>${item.tempat_lahir || '-'}</td>
+                <td>${formatTanggalIndo(item.tanggal_lahir)}</td>
+                <td style="text-align: center;">
+                    <button class="btn-danger-icon btn-pemicu-hapus" data-id="${item.docId}">🗑️</button>
+                </td>
+            `;
+            tabelWisatawan.appendChild(tr);
+        });
+
+        inisialisasiEventHapus();
+    }
+
+    // 3. PENCARIAN DATA (CLIENT SIDE INTERACTIVE FILTER)
+    pencarianInput.addEventListener('input', (e) => {
+        const kataKunci = e.target.value.toLowerCase();
+        const hasilFilter = localDataWisatawan.filter(w => 
+            (w.nama_wisatawan && w.nama_wisatawan.toLowerCase().includes(kataKunci)) || 
+            (w.id_wisatawan && w.id_wisatawan.toLowerCase().includes(kataKunci)) ||
+            (w.tempat_lahir && w.tempat_lahir.toLowerCase().includes(kataKunci))
+        );
+        renderTable(hasilFilter);
+    });
+
+    // 4. ALUR HAPUS DATA DENGAN MODAL KUSTOM (DELETE)
+    function inisialisasiEventHapus() {
+        document.querySelectorAll('.btn-pemicu-hapus').forEach(btn => {
+            btn.onclick = (e) => {
+                currentDeleteId = e.currentTarget.getAttribute('data-id');
+                deleteModal.classList.add('active');
+            };
+        });
+    }
+
+    document.getElementById('btnCancelDelete').onclick = () => {
+        deleteModal.classList.remove('active');
+        currentDeleteId = null;
+    };
+
+    document.getElementById('btnConfirmDelete').onclick = async () => {
+        if (currentDeleteId) {
+            deleteModal.classList.remove('active');
+            try {
+                await deleteDoc(doc(db, "wisatawan", currentDeleteId));
+                showToast("Data wisatawan telah dihapus.", "success");
+            } catch (error) {
+                showToast("Gagal menghapus: " + error.message, "error");
+            } finally {
+                currentDeleteId = null;
+            }
+        }
+    };
+
+    // Fungsi Utilitas Toast Notification 
+    function showToast(text, type) {
+        const toast = document.getElementById('toast-notification');
+        toast.textContent = text;
+        toast.className = type === 'success' ? 'toast-success' : 'toast-error';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+</script>
+
+</body>
+</html>
