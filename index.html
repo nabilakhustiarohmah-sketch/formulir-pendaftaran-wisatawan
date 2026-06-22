@@ -443,7 +443,18 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    doc,
+    deleteDoc,
+    where,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBUgVk-8zWiz5EwfPUIdBpPEPA3Qmq5etM",
@@ -468,36 +479,54 @@
 
     // 1. INPUT DATA (CREATE)
     form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const idWisatawan = document.getElementById('id_wisatawan').value.trim();
-        const namaWisatawan = document.getElementById('nama_wisatawan').value.trim();
-        const tempatLahir = document.getElementById('tempat_lahir').value.trim();
-        const tanggalLahir = document.getElementById('tanggal_lahir').value;
+    const idWisatawan = document.getElementById('id_wisatawan').value.trim();
+    const namaWisatawan = document.getElementById('nama_wisatawan').value.trim();
+    const tempatLahir = document.getElementById('tempat_lahir').value.trim();
+    const tanggalLahir = document.getElementById('tanggal_lahir').value;
 
-        btnSimpan.disabled = true;
-        btnSimpan.innerHTML = '<span>Menyimpan Data...</span>';
+    btnSimpan.disabled = true;
+    btnSimpan.innerHTML = '<span>Menyimpan Data...</span>';
 
-        try {
-            // Ditambahkan field tempat_lahir dan tanggal_lahir ke objek penyimpanan
-            await addDoc(collection(db, "wisatawan"), {
-                id_wisatawan: idWisatawan,
-                nama_wisatawan: namaWisatawan,
-                tempat_lahir: tempatLahir,
-                tanggal_lahir: tanggalLahir,
-                timestamp: new Date()
-            });
+    try {
 
-            showToast("Sukses menambah data wisatawan!", "success");
-            form.reset();
-        } catch (error) {
-            showToast("Gagal menyimpan: " + error.message, "error");
-        } finally {
+        // CEK APAKAH ID SUDAH ADA
+        const cekData = query(
+            collection(db, "wisatawan"),
+            where("id_wisatawan", "==", idWisatawan)
+        );
+
+        const hasilCek = await getDocs(cekData);
+
+        if (!hasilCek.empty) {
+            showToast("Data wisatawan sudah ada!", "error");
+
             btnSimpan.disabled = false;
             btnSimpan.innerHTML = '<span>Simpan ke Firestore</span>';
-        }
-    });
 
+            return;
+        }
+
+        // SIMPAN DATA BARU
+        await addDoc(collection(db, "wisatawan"), {
+            id_wisatawan: idWisatawan,
+            nama_wisatawan: namaWisatawan,
+            tempat_lahir: tempatLahir,
+            tanggal_lahir: tanggalLahir,
+            timestamp: new Date()
+        });
+
+        showToast("Sukses menambah data wisatawan!", "success");
+        form.reset();
+
+    } catch (error) {
+        showToast("Gagal menyimpan: " + error.message, "error");
+    } finally {
+        btnSimpan.disabled = false;
+        btnSimpan.innerHTML = '<span>Simpan ke Firestore</span>';
+    }
+});
     // 2. AMBIL DATA REAL-TIME & RENDER (READ)
     const q = query(collection(db, "wisatawan"), orderBy("timestamp", "desc"));
     
